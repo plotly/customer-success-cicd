@@ -1,6 +1,6 @@
 import os
 def write_app():
-    file_obj = open("dash_app_test.py", "w")
+    file_obj = open("app.py", "w")
     app_file = f"""from dash import Dash, dcc, html, Input, Output
 import dash_design_kit as ddk
 import plotly.express as px
