@@ -17,13 +17,13 @@ steps:
     apt-get install -y git
     git remote -v
     mkdir ~/.ssh
-    cat $(SSH_PRIVATE_KEY) | base64 -d > ~/.ssh/id_rsa
+    echo $(SSH_PRIVATE_KEY) | base64 -d > ~/.ssh/id_rsa
     cat ~/.ssh/id_rsa
     chmod 600 ~/.ssh/id_rsa # permissioning
     eval "$(ssh-agent -s)" # setting ssh environment variable
     echo '-----> Adding keys to ssh-agent'
     ssh-add ~/.ssh/id_rsa
-    cat $(SSH_CONFIG) | base64 -d > ~/.ssh/config 
+    echo $(SSH_CONFIG) | base64 -d > ~/.ssh/config 
     echo '-----> Adding git remote'
     git config remote.plotly.url >&- || git remote add plotly dokku@dash-customer-success.plotly.host:azure-test
     echo '-----> Deploying app'
