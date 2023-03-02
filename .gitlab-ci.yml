@@ -32,7 +32,7 @@ deploy:
     - echo "$(git remote -v)"
     - echo "$(git branch)"
     - git checkout -b runner-branch
-    - GIT_SSH_COMMAND='ssh -vvv' git push plotly runner-branch:master -f
+    - GIT_SSH_COMMAND='ssh -vvv' git push plotly runner-branch:main -f
   environment: production
 
 
