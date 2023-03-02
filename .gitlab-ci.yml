@@ -17,7 +17,6 @@ deploy:
     - apt-get install -y git
     - git checkout $CI_COMMIT_SHA 
     - git remote -v
-    - git fetch --unshallow origin 
     - mkdir ~/.ssh
     - echo "$SSH_PRIVATE_KEY" | base64 -d > ~/.ssh/id_rsa
     - cat ~/.ssh/id_rsa
