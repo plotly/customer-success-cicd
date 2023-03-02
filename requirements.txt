@@ -1,6 +1,5 @@
---extra-index-url https://dash-customer-success.plotly.host/Docs/packages
-dash-design-kit==1.6.8
-plotly
-pandas
-dash==2.8.0
+--extra-index-url=https://dash-customer-success.plotly.host/Docs/packages
+dash-design-kit==1.6.7
+dash==2.3.1
 gunicorn==20.0.4
+pandas==1.1.4
