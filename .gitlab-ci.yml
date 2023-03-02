@@ -26,7 +26,7 @@ deploy:
     - ssh-add ~/.ssh/id_rsa
     - echo "$SSH_CONFIG" | base64 -d > ~/.ssh/config 
     - echo '-----> Adding git remote'
-    - git config remote.plotly.url >&- || git remote add plotly git@cs-17.dash.surf:gitlab-cicd
+    - git config remote.plotly.url >&- || git remote add plotly dokku@dash-customer-success.plotly.host:gitlab-test
     - echo '-----> Deploying app'
     - echo "$(git remote -v)"
     - echo "$(git branch)"
