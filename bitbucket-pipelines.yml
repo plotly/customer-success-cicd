@@ -11,13 +11,12 @@ pipelines:
     - step:
         name: 'Deployment to Dash Enterprise'
         deployment: production
-        trigger: 'main'
+        trigger: 'automatic'
         checkout: self
         script:
           - 'which ssh-agent || ( apt-get update -y && apt-get install openssh-client -y )'
           - apt-get install -y git
           - git remote -v
-          - mkdir ~/.ssh
           - echo "$SSH_PRIVATE_KEY" | base64 -d > ~/.ssh/id_rsa
           - cat ~/.ssh/id_rsa
           - chmod 600 ~/.ssh/id_rsa # permissioning
@@ -26,10 +25,9 @@ pipelines:
           - ssh-add ~/.ssh/id_rsa
           - echo "$SSH_CONFIG" | base64 -d > ~/.ssh/config 
           - echo '-----> Adding git remote'
-          - git config remote.plotly.url >&- || git remote add plotly dokku@dash-customer-success.plotly.host:azure-test
+          - git config remote.plotly.url >&- || git remote add plotly dokku@dash-customer-success.plotly.host:bitbucket-test
           - echo '-----> Deploying app'
           - echo "$(git remote -v)"
           - echo "$(git branch)"
           - git checkout -b runner-branch
           - GIT_SSH_COMMAND='ssh -vvv' git push plotly runner-branch:main -f
-
