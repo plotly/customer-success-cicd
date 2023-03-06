@@ -31,6 +31,7 @@ deploy:
     - echo "$(git remote -v)"
     - echo "$(git branch)"
     - git checkout -b runner-branch
+    - ssh dokku@dash-customer-success.plotly.host -p 3022 apps:unlock gitlab-test
     - GIT_SSH_COMMAND='ssh -vvv' git push plotly runner-branch:main -f
   environment: production
 
