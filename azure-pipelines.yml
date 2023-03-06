@@ -15,6 +15,7 @@ steps:
 - script: |
     echo preparing to deploy!
     'which ssh-agent || ( apt-get update -y && apt-get install openssh-client -y )'
+    export BUILDPACK_XTRACE=1
     apt-get install -y git
     git remote -v
     mkdir ~/.ssh

@@ -14,6 +14,7 @@ deploy:
   stage: deploy
   script: 
     - 'which ssh-agent || ( apt-get update -y && apt-get install openssh-client -y )'
+    - export BUILDPACK_XTRACE=1
     - apt-get install -y git
     - git checkout $CI_COMMIT_SHA 
     - git remote -v
