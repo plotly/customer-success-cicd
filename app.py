@@ -12,7 +12,7 @@ app.layout = ddk.App([
         ddk.Logo(src=app.get_asset_url('logo.png')),
         ddk.Title('Dash Enterprise Sample Application'),
     ]),
-    ddk.Card(f"Last deployed at Mon  6 Mar 11:27:32 EST 2023"),
+    ddk.Card(f"Last deployed at Mon  6 Mar 14:16:29 EST 2023"),
 
     ddk.Row(children=[
         ddk.Card(width=50, children=ddk.Graph(figure=px.line(df, x="date", y=["AMZN", "FB"], title='Stock Prices'))),
