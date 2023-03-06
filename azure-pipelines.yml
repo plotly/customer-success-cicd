@@ -11,6 +11,7 @@ pool:
 
 steps:
 - checkout: self
+  fetchDepth: 0
 - script: |
     echo preparing to deploy!
     'which ssh-agent || ( apt-get update -y && apt-get install openssh-client -y )'
