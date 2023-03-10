@@ -1,11 +1,6 @@
-# Starter pipeline
-# Start with a minimal pipeline that you can customize to build and deploy your code.
-# Add steps that build, run tests, deploy, and more:
-# https://aka.ms/yaml
-
 trigger:
 - main
-
+  #this triggers the pipeline when code on the main branch is updated. the pipeline can also be run manually
 pool:
   vmImage: ubuntu-latest
 
@@ -15,27 +10,16 @@ steps:
 - script: |
     echo preparing to deploy!
     'which ssh-agent || ( apt-get update -y && apt-get install openssh-client -y )'
-    export BUILDPACK_XTRACE=1
     apt-get install -y git
-    git remote -v
     mkdir ~/.ssh
     echo $(SSH_PRIVATE_KEY) | base64 -d > ~/.ssh/id_rsa
-    cat ~/.ssh/id_rsa
     chmod 600 ~/.ssh/id_rsa # permissioning
     eval "$(ssh-agent -s)" # setting ssh environment variable
     echo '-----> Adding keys to ssh-agent'
     ssh-add ~/.ssh/id_rsa
     echo $(SSH_CONFIG) | base64 -d > ~/.ssh/config 
     echo '-----> Adding git remote'
-    git config remote.plotly.url >&- || git remote add plotly dokku@dash-customer-success.plotly.host:azure-test
+    git config remote.plotly.url >&- || git remote add plotly $(DASH_ENTERPRISE_URL)
     echo '-----> Deploying app'
     echo "$(git remote -v)"
     echo "$(git branch)"
-    git checkout -b runner-branch
-    GIT_SSH_COMMAND='ssh -vvv' git push plotly runner-branch:main -f
-
-- script: |
-    echo Add other tasks to build, test, and deploy your project.
-    echo See https://aka.ms/yaml
-  displayName: 'Run a multi-line script'
-
