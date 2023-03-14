@@ -9,7 +9,7 @@ steps:
   fetchDepth: 0
 - script: |
     echo preparing to deploy!
-    'which ssh-agent || ( apt-get update -y && apt-get install openssh-client -y )'
+    'which ssh-agent || ( sudo apt-get update -y && apt-get install openssh-client -y )'
     apt-get install -y git
     mkdir ~/.ssh
     echo $(SSH_PRIVATE_KEY) | base64 -d > ~/.ssh/id_rsa
@@ -17,10 +17,7 @@ steps:
     eval "$(ssh-agent -s)" # setting ssh environment variable
     echo '-----> Adding keys to ssh-agent'
     ssh-add ~/.ssh/id_rsa
-    echo "Host *
-        Port 3022
-        StrictHostKeyChecking no
-        UserKnownHostsFile=/dev/null" > ~/.ssh/config
+    echo $(SSH_CONFIG) | base64 -d > ~/.ssh/config 
     echo '-----> Adding git remote'
     git config remote.plotly.url >&- || git remote add plotly $(DASH_ENTERPRISE_URL)
     echo '-----> Deploying app'
