@@ -26,5 +26,4 @@ steps:
     echo '-----> Deploying app'
     echo "$(git remote -v)"
     echo "$(git branch)"
-    git checkout -b runner-branch
-    git push plotly runner-branch:main -f
+  git push plotly HEAD:refs/heads/master -f
