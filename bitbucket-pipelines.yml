@@ -5,6 +5,9 @@
 
 image: ubuntu:latest
 
+options:
+  max-time: 6
+
 pipelines:
   default:
     # The following deployment steps will be executed for each pipeline run. To configure your steps and conditionally deploy see https://support.atlassian.com/bitbucket-cloud/docs/configure-bitbucket-pipelinesyml/
@@ -29,5 +32,5 @@ pipelines:
           - echo '-----> Deploying app'
           - echo "$(git remote -v)"
           - echo "$(git branch)"
-          - git checkout -b runner-branch
-          - GIT_SSH_COMMAND='ssh -vvv' git push plotly runner-branch:main -f
+            # - git checkout -b runner-branch
+          - GIT_SSH_COMMAND='ssh -vvv' git push plotly HEAD:main -f
