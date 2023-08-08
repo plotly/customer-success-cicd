@@ -1,0 +1,32 @@
+# This is a basic GitHub Actions workflow for https deployments
+name: CI https
+
+# Controls when the workflow will run
+on:
+  #  Triggers the workflow on tag release
+  release:
+    types: [published]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+      - name: Prod Deploy
+        run: |
+          printf '#!/bin/bash\necho username=$DASH_ENTERPRISE_USERNAME\necho password=$DASH_ENTERPRISE_PASSWORD' >> helper-script.sh
+          git config credential.helper "/bin/bash $(pwd)/helper-script.sh"
+          git config protocol.version 0
+
+          git remote rm origin 2>/dev/null || true
+          git remote add "plotly" "https://$DASH_ENTERPRISE_HOST/GIT/$APP_NAME"
+
+          git push --force plotly HEAD:refs/heads/main
+        env:
+          DASH_ENTERPRISE_HOST: ${{secrets.DASH_ENTERPRISE_HOST}}
+          DASH_ENTERPRISE_PASSWORD: ${{secrets.DASH_ENTERPRISE_PASSWORD}}
+          DASH_ENTERPRISE_USERNAME: ${{secrets.DASH_ENTERPRISE_USERNAME}}
+          APP_NAME: ${{secrets.APP_NAME}}
