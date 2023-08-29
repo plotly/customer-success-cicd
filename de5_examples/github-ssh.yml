@@ -1,0 +1,66 @@
+# This is a basic workflow to help you get started with Actions
+
+name: CI
+
+# Controls when the workflow will run
+on:
+  # Triggers the workflow on push or pull request events but only for the "main" branch
+  push:
+    branches: [ "main" ]
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  # This workflow contains a single job called "build"
+  build:
+    # The type of runner that the job will run on
+    runs-on: ubuntu-latest
+
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - uses: actions/checkout@v3
+
+      # Runs a single command using the runners shell
+      - name: Print secret and ref name
+        if: github.ref_name == 'dev'
+        env:
+          SECRET_TOKEN_RUNNER: ${{ secrets.SECRET_TOKEN }}
+          BRANCH_NAME: ${{ github.ref_name }}
+        run: |
+          echo $SECRET_TOKEN_RUNNER
+          echo $BRANCH_NAME
+      # Runs a set of commands using the runners shell
+      - name: Run a multi-line script
+        run: |
+          echo Add other actions to build,
+          echo test, and deploy your project.
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Show files
+        run: ls -l
+      - name: create private key from env var
+        env:
+          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+          DASH_ENTERPRISE_HOST: ${{secrets.DASH_ENTERPRISE_HOST}}
+          APP_NAME: ${{secrets.APP_NAME}}
+        run: |
+          git remote -v
+          git fetch --unshallow origin # prevent shallow update not allowed error
+          mkdir ~/.ssh
+          echo $SSH_PRIVATE_KEY | base64 -d > ~/.ssh/id_ed25519
+          chmod 600 ~/.ssh/id_ed25519 # permissioning
+          eval "$(ssh-agent -s)" # setting ssh environment variable
+          echo '-----> Adding keys to ssh-agent'
+          ssh-add ~/.ssh/id_ed25519
+          echo "Host *
+            StrictHostKeyChecking no 
+            UserKnownHostsFile=/dev/null" > ~/.ssh/config
+          echo '-----> Adding git remote'
+          git config remote.plotly.url >&- || git remote add plotly git@${DASH_ENTERPRISE_HOST}:${APP_NAME}
+          echo '-----> Deploying app'
+          GIT_SSH_COMMAND='ssh -vvv' git push plotly HEAD:main -f
