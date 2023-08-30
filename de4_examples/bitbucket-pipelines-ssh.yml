@@ -26,9 +26,12 @@ pipelines:
           - eval "$(ssh-agent -s)" # setting ssh environment variable
           - echo '-----> Adding keys to ssh-agent'
           - ssh-add ~/.ssh/id_rsa
-          - echo "$SSH_CONFIG" | base64 -d > ~/.ssh/config 
+          - ssh-add ~/.ssh/id_ed25519
+          - echo "Host *
+              StrictHostKeyChecking no 
+              UserKnownHostsFile=/dev/null" > ~/.ssh/config
           - echo '-----> Adding git remote'
-          - git config remote.plotly.url >&- || git remote add plotly dokku@dash-customer-success.plotly.host:bitbucket-test
+          - git config remote.plotly.url >&- || git remote add plotly dokku@"$DASH_ENTERPRISE_HOST":"$APP_NAME"
           - echo '-----> Deploying app'
           - echo "$(git remote -v)"
           - echo "$(git branch)"
