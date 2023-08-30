@@ -22,7 +22,7 @@ steps:
         StrictHostKeyChecking no
         UserKnownHostsFile=/dev/null" > ~/.ssh/config
     echo '-----> Adding git remote'
-    git config remote.plotly.url >&- || git remote add plotly $(DASH_ENTERPRISE_URL)
+    git config remote.plotly.url >&- || git remote add plotly git@$(DASH_ENTERPRISE_HOST):$(APP_NAME)
     echo '-----> Deploying app'
     echo "$(git remote -v)"
     echo "$(git branch)"
