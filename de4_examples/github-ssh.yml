@@ -47,7 +47,8 @@ jobs:
       - name: create private key from env var
         env:
           SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
-          SSH_CONFIG: ${{ secrets.SSH_CONFIG }}
+          DASH_ENTERPRISE_HOST: ${{secrets.DASH_ENTERPRISE_HOST}}
+          APP_NAME: ${{secrets.APP_NAME}}
         run: |
           git remote -v
           git fetch --unshallow origin # prevent shallow update not allowed error
@@ -59,10 +60,14 @@ jobs:
           echo '-----> Adding keys to ssh-agent'
           ssh-add ~/.ssh/id_rsa
 
-          echo $SSH_CONFIG | base64 -d > ~/.ssh/config
+          ssh-add ~/.ssh/id_ed25519
+          echo "Host *
+            StrictHostKeyChecking no
+            Port 3022
+            UserKnownHostsFile=/dev/null" > ~/.ssh/config
 
           echo '-----> Adding git remote'
-          git config remote.plotly.url >&- || git remote add plotly dokku@dash-customer-success.plotly.host:github-test
+          git config remote.plotly.url >&- || git remote add plotly dokku@$DASH_ENTERPRISE_HOST:$APP_NAME
           echo '-----> Deploying app'
           git push plotly HEAD:master -f
 
