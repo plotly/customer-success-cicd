@@ -1,0 +1,31 @@
+trigger:
+- main
+  #this triggers the pipeline when code on the main branch is updated. the pipeline can also be run manually
+pool:
+  vmImage: ubuntu-latest
+
+steps:
+- checkout: self
+  fetchDepth: 0
+- script: |
+    echo preparing to deploy!
+    'which ssh-agent || ( sudo apt-get update -y && apt-get install openssh-client -y )'
+    apt-get install -y git
+    mkdir ~/.ssh
+    echo "$(SSH_PRIVATE_KEY)" | sed 's/[^A-Za-z0-9+/=]//g' | base64 -d > ~/.ssh/id_rsa
+    chmod 600 ~/.ssh/id_rsa # permissioning
+    eval "$(ssh-agent -s)" # setting ssh environment variable
+    echo '-----> Adding keys to ssh-agent'
+    ssh-add ~/.ssh/id_rsa
+    echo "Host *
+        Port 22
+        IdentityFile ~/.ssh/id_rsa
+        StrictHostKeyChecking no
+        UserKnownHostsFile=/dev/null" > ~/.ssh/config
+    chmod 644 ~/.ssh/config
+    echo '-----> Adding git remote'
+    git config remote.plotly.url >&- || git remote add plotly $(DASH_ENTERPRISE_URL)
+    echo '-----> Deploying app'
+    echo "$(git remote -v)"
+    echo "$(git branch)"
+    git push plotly HEAD:refs/heads/main -f
