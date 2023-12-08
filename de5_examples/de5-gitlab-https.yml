@@ -1,0 +1,25 @@
+image: ubuntu:latest
+
+variables:
+  SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+  GH_TOKEN: ${{secrets.GH_TOKEN}}
+  DASH_ENTERPRISE_USERNAME: ${{secrets.DASH_ENTERPRISE_USERNAME}}
+  DASH_ENTERPRISE_PASSWORD: ${{secrets.DASH_ENTERPRISE_PASSWORD}}
+  DASH_ENTERPRISE_HOST: ${{secrets.DASH_ENTERPRISE_HOST}}
+  APP_NAME: ${{secrets.APP_NAME}}
+
+deploy:
+  stage: deploy
+  script: 
+    - apt-get install -y git
+    - git checkout $CI_COMMIT_SHA 
+    - echo '-----> Adding git remote'
+    - git config --global user.name $DASH_ENTERPRISE_USERNAME
+    - git config remote.plotly.url >&- || git remote add plotly https://$DASH_ENTERPRISE_USERNAME:$DASH_ENTERPRISE_PASSWORD@$DASH_ENTERPRISE_HOST/GIT/app-name
+    - echo '-----> Deploying app'
+    - echo "$(git remote -v)"
+    - echo "$(git branch)"
+    - GIT_SSH_COMMAND='ssh -vvv' git push plotly HEAD:refs/heads/main -f
+  environment: production
+
+
