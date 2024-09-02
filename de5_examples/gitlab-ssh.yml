@@ -1,0 +1,26 @@
+stages:          # List of stages for jobs, and their order of execution
+  - deploy
+
+deploy:
+  stage: deploy
+  script: 
+    - 'which ssh-agent || ( apt-get update -y && apt-get install openssh-client -y )'
+    - apt-get install -y git
+    - git checkout $CI_COMMIT_SHA 
+    - git remote -v
+    - mkdir ~/.ssh
+    - echo "$SSH_PRIVATE_KEY" | base64 -d > ~/.ssh/id_ed25519
+    - chmod 600 ~/.ssh/id_ed25519 # permissioning
+    - eval "$(ssh-agent -s)" # setting ssh environment variable
+    - echo '-----> Adding keys to ssh-agent'
+    - ssh-add ~/.ssh/id_ed25519
+    - echo "$SSH_CONFIG" | base64 -d > ~/.ssh/config 
+    - cat ~/.ssh/config
+    - echo '-----> Adding git remote'
+    - git config remote.plotly.url >&- || git remote add plotly git@$DASH_ENTERPRISE_HOST:$APP_NAME
+    - echo '-----> Deploying app'
+    - echo "$(git remote -v)"
+    - echo "$(git branch)"
+    - git checkout -b runner-branch
+    - GIT_SSH_COMMAND='ssh -vvv' git push plotly runner-branch:main -f
+  environment: production
